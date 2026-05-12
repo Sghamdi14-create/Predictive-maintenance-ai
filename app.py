@@ -1,58 +1,57 @@
 import streamlit as st
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
 
-# إعداد الصفحة
-st.set_page_config(
-    page_title="AI Predictive Maintenance",
-    layout="wide"
-)
+st.set_page_config(page_title="AI Predictive Maintenance", layout="wide")
 
 st.title("🔧 AI Predictive Maintenance for Laboratory Equipment")
+st.caption("Proof-of-Concept Decision Support System")
 
-# قراءة البيانات
-df = pd.read_csv("Predictive_Maintenance_dataset.CSV", sep=';')
+df = pd.read_csv("Predictive_Maintenance_dataset.CSV", sep=";")
 
-# عرض البيانات
 st.subheader("Dataset Preview")
-st.dataframe(df.head())
+st.dataframe(df)
 
-# اختيار الخصائص
-features = [
-    "Predictability",
-    "Repeatability",
-    "Operational_Impact",
-    "Sudden",
-    "Severity"
-]
+st.subheader("Device Risk Dashboard")
+st.bar_chart(df.set_index("Device_Type")["Risk_Score"])
 
-X = df[features]
-y = df["Failure"]
+st.subheader("AI Prediction Input")
 
-# تقسيم البيانات
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+failure = st.selectbox("Failure", [0, 1])
+predictability = st.slider("Predictability", 1, 3, 2)
+repeatability = st.slider("Repeatability", 0, 3, 1)
+operational_impact = st.slider("Operational Impact", 0, 4, 3)
+sudden = st.selectbox("Sudden", [0, 1])
+severity = st.slider("Severity", 0, 4, 2)
+symptom_duration = st.slider("Symptom Duration", 0, 10, 1)
+
+risk_score = (
+    failure * 2
+    + predictability
+    + repeatability
+    + operational_impact
+    + severity
+    + sudden
+    + (1 if symptom_duration >= 5 else 0)
 )
 
-# تدريب النموذج
-model = DecisionTreeClassifier()
-model.fit(X_train, y_train)
+if risk_score >= 8:
+    status = "Critical"
+    recommendation = "Immediate Maintenance Required"
+    priority = "High"
+elif risk_score >= 5:
+    status = "Warning"
+    recommendation = "Schedule Inspection"
+    priority = "Medium"
+else:
+    status = "Normal"
+    recommendation = "Continue Normal Operation"
+    priority = "Low"
 
-# التنبؤ
-predictions = model.predict(X_test)
+if st.button("Analyze Device"):
+    st.subheader("AI Decision Output")
+    st.success(f"AI Status: {status}")
+    st.info(f"Recommendation: {recommendation}")
+    st.warning(f"Priority Level: {priority}")
+    st.write(f"Calculated Risk Score: {risk_score}")
 
-# الدقة
-accuracy = accuracy_score(y_test, predictions)
-
-st.subheader("Model Accuracy")
-st.success(f"Accuracy: {accuracy:.2f}")
-
-st.subheader("Prediction Results")
-results = pd.DataFrame({
-    "Actual": y_test.values,
-    "Predicted": predictions
-})
-
-st.dataframe(results)
+st.caption("This is a Proof-of-Concept AI decision support tool. Final maintenance decisions require expert review.")
