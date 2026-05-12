@@ -1,0 +1,13 @@
+Device_Type;Failure;Predictability;Repeatability;Operational_impact;Sudden;Severity;Symptom_Duration;Risk_Score;Priority_Level;Alert_Massage;Maintenance_Strategy;AI-Status;AI_Recommendation
+Viscometer;1;3;3;4;0;3;7;10;High;High-risk equipment: immediate action required;Predictive Maintenance;Critical;Immediate Maintenance Required
+EDX;1;1;0;4;1;3;0;8;High;High-risk equipment: immediate action required;Continuous Monitoring;Critical;Immediate Maintenance Required
+Flash Point;1;2;2;3;0;2;7;7;Medium;Moderate risk: inspection should be scheduled;Preventive Maintenance;Warning;Schedule Inspection
+Distillation;1;2;1;3;1;2;0;7;Medium;Moderate risk: inspection should be scheduled;Preventive Maintenance;Warning;Schedule Inspection
+Pour point;1;2;1;3;1;2;1;7;Medium;Moderate risk: inspection should be scheduled;Preventive Maintenance;Warning;Schedule Inspection
+;;;;;;;;0;Low;Normal condition: continue routine monitoring;Normal Operation;Normal;Continue Normal Operation
+;;;;;;;;;;;;;
+Viscometer;0;1;0;0;0;0;0;Risk_Score;;;Maintenance_Strategy;AI-Status;AI_Recommendation
+EDX;0;1;0;0;0;0;0;0;;;Normal Operation;Normal;Continue Normal Operation
+Flash Point;0;1;0;0;0;0;0;0;;;Normal Operation;Normal;Continue Normal Operation
+Distillation;0;1;0;0;0;0;0;0;;;Normal Operation;Normal;Continue Normal Operation
+Pour point;0;1;0;0;0;0;0;0;;;Normal Operation;Normal;Continue Normal Operation
