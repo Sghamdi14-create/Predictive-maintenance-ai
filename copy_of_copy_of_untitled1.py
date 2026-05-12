@@ -10,7 +10,7 @@ Original file is located at
 import pandas as pd
 
 # قراءة ملف البيانات
-df = pd.read_csv('Predictive_Maintenance_dataset 22.csv', sep=';')
+df = pd.read_csv('Predictive_Maintenance_dataset.csv', sep=';')
 
 # عرض أول 5 صفوف
 df.head()
