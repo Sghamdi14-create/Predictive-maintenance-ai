@@ -22,7 +22,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 
 # قراءة ملف البيانات
-df = pd.read_csv('Predictive_Maintenance_dataset 22.csv', sep=';')
+df = pd.read_csv('Predictive_Maintenance_dataset_22.csv', sep=';')
 
 # عرض أول 5 صفوف
 print(df.head())
