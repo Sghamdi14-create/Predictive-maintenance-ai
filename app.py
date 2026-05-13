@@ -1,7 +1,6 @@
-st.image("logo.png", width=180)
 import streamlit as st
 import pandas as pd
-
+st.image("logo.png", width=180)
 st.set_page_config(
     page_title="AI Predictive Maintenance",
     page_icon="🔧",
