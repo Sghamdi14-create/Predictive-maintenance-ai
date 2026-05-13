@@ -7,7 +7,7 @@ st.set_page_config(
     layout="wide"
 )
 
-df = pd.read_csv("Predictive_Maintenance_dataset. 22.csv", sep=";")
+df = pd.read_csv("Predictive_Maintenance_dataset 22.csv", sep=";")
 
 st.sidebar.title("About Project")
 st.sidebar.info("""
