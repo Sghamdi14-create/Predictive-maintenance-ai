@@ -1,77 +1,53 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
-# ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="AI Predictive Maintenance",
     page_icon="🔧",
     layout="wide"
 )
 
-# ---------------- LOAD DATA ----------------
-df = pd.read_csv("Predictive_Maintenance_dataset.csv")
+df = pd.read_csv("Predictive_Maintenance_dataset.csv", sep=";")
 
-# ---------------- SIDEBAR ----------------
 st.sidebar.title("About Project")
-
 st.sidebar.info("""
-AI-Based Predictive Maintenance
+AI-Based Predictive Maintenance  
 Proof-of-Concept System
 
-Developed by:
+Developed by:  
 Saeed Alghamdi
 
-Laboratory Analyst &
-Deputy Quality Manager
-
-Saudi Standards, Metrology
-and Quality Organization (SASO)
+Laboratory Analyst & Deputy Quality Manager  
+Saudi Standards, Metrology and Quality Organization (SASO)
 """)
-
 st.sidebar.success("System Status: Online")
 
-# ---------------- MAIN TITLE ----------------
 st.title("🔧 AI Predictive Maintenance for Laboratory Equipment")
 
 st.markdown("""
 ### Proof-of-Concept Decision Support System
 
-This system is designed to support predictive maintenance planning for laboratory equipment using operational risk indicators and AI concepts.
+This system supports predictive maintenance planning for laboratory equipment using operational risk indicators and AI decision logic.
 """)
 
-# ---------------- DATASET ----------------
-st.header("Dataset Preview")
-
-st.dataframe(df)
-
-# ---------------- KPI SECTION ----------------
 st.header("System Overview")
-
-col1, col2, col3 = st.columns(3)
 
 high_risk = len(df[df["Risk_Score"] >= 8])
 medium_risk = len(df[(df["Risk_Score"] >= 5) & (df["Risk_Score"] < 8)])
 low_risk = len(df[df["Risk_Score"] < 5])
 
+col1, col2, col3 = st.columns(3)
 col1.metric("High Risk Devices", high_risk)
 col2.metric("Medium Risk Devices", medium_risk)
 col3.metric("Low Risk Devices", low_risk)
 
-# ---------------- CHART ----------------
-st.header("Risk Score Distribution")
+st.header("Dataset Preview")
+st.dataframe(df)
 
-fig = px.bar(
-    df,
-    x="Device_Type",
-    y="Risk_Score",
-    color="Risk_Score",
-    title="Equipment Risk Levels"
-)
+st.header("Device Risk Dashboard")
+chart_data = df[["Device_Type", "Risk_Score"]].dropna()
+st.bar_chart(chart_data.set_index("Device_Type"))
 
-st.plotly_chart(fig, use_container_width=True)
-
-# ---------------- INPUT SECTION ----------------
 st.header("AI Prediction Input")
 
 failure = st.selectbox("Failure", [0, 1])
@@ -82,9 +58,7 @@ sudden = st.selectbox("Sudden", [0, 1])
 severity = st.slider("Severity", 0, 3, 1)
 symptom_duration = st.slider("Symptom Duration", 0, 7, 1)
 
-# ---------------- AI LOGIC ----------------
 if st.button("Analyze Device"):
-
     risk_score = (
         failure +
         predictability +
@@ -99,29 +73,21 @@ if st.button("Analyze Device"):
         status = "Critical"
         recommendation = "Immediate inspection required"
         priority = "High"
-
+        st.error(f"AI Status: {status}")
     elif risk_score >= 5:
         status = "Warning"
         recommendation = "Schedule inspection"
         priority = "Medium"
-
+        st.warning(f"AI Status: {status}")
     else:
         status = "Normal"
         recommendation = "Continue monitoring"
         priority = "Low"
+        st.success(f"AI Status: {status}")
 
-    st.header("AI Decision Output")
-
-    st.error(f"AI Status: {status}")
-    st.warning(f"Recommendation: {recommendation}")
-    st.success(f"Priority Level: {priority}")
-
+    st.info(f"Recommendation: {recommendation}")
+    st.write(f"Priority Level: {priority}")
     st.write(f"Calculated Risk Score: {risk_score}")
 
-# ---------------- DISCLAIMER ----------------
 st.markdown("---")
-
-st.caption("""
-This system is a Proof-of-Concept AI decision support tool.
-Final maintenance decisions require expert review.
-""")
+st.caption("This system is a Proof-of-Concept AI decision support tool. Final maintenance decisions require expert review.")
