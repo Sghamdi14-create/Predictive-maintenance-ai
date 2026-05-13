@@ -1,3 +1,4 @@
+st.image("logo.png", width=180)
 import streamlit as st
 import pandas as pd
 
