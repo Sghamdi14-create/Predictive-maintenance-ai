@@ -31,7 +31,7 @@ This system supports predictive maintenance planning for laboratory equipment us
 """)
 
 st.header("System Overview")
-
+df["Risk_Score"] = pd.to_numeric(df["Risk_Score"], errors="coerce")
 high_risk = len(df[df["Risk_Score"] >= 8])
 medium_risk = len(df[(df["Risk_Score"] >= 5) & (df["Risk_Score"] < 8)])
 low_risk = len(df[df["Risk_Score"] < 5])
