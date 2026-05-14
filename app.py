@@ -83,7 +83,7 @@ st.sidebar.success("System Status: Online")
 
 st.sidebar.markdown("### Model Performance")
 st.sidebar.success(f"XGBoost Accuracy: {model_accuracy:.2f}")
-
+st.sidebar.caption("Preliminary result based on the current proof-of-concept dataset.")
 # العنوان الرئيسي
 st.title("🔧 AI Predictive Maintenance for Laboratory Equipment")
 
