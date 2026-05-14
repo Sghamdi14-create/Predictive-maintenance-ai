@@ -15,7 +15,11 @@ st.set_page_config(
 st.image("logo.png", width=180)
 
 # Load dataset
-df = pd.read_csv("Predictive_Maintenance_dataset 22.CSV", sep=";")
+df = pd.read_csv(
+    "Predictive_Maintenance_dataset 22.CSV",
+    sep=";",
+    encoding="utf-8-sig"
+)
 df.columns = df.columns.str.strip()
 
 # Model columns
