@@ -140,23 +140,23 @@ symptom_duration = st.slider("Symptom Duration", 0, 7, 1)
 if st.button("Analyze Device Using XGBoost"):
 
     input_data = pd.DataFrame(
-        [[
-            predictability,
-            repeatability,
-            operational_impact,
-            sudden,
-            severity,
-            symptom_duration
-        ]],
-        columns=[
-            "Predictability",
-            "Repeatability",
-            "Operational_Impact",
-            "Sudden",
-            "Severity",
-            "Symptom_Duration"
-        ]
-    )
+    [[
+        predictability,
+        repeatability,
+        operational_impact,
+        sudden,
+        severity,
+        symptom_duration
+    ]],
+    columns=[
+        "Predictability",
+        "Repeatability",
+        "Operational_impact",
+        "Sudden",
+        "Severity",
+        "Symptom_Duration"
+    ]
+)
 
     prediction = xgb_model.predict(input_data)[0]
 
