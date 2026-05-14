@@ -21,7 +21,7 @@ df = pd.read_csv("Predictive_Maintenance_dataset 22.CSV", sep=";")
 model_columns = [
     "Predictability",
     "Repeatability",
-    "Operational_Impact",
+    "Operational_impact",
     "Sudden",
     "Severity",
     "Symptom_Duration",
@@ -39,7 +39,7 @@ X = model_df[
     [
         "Predictability",
         "Repeatability",
-        "Operational_Impact",
+        "Operational_impact",
         "Sudden",
         "Severity",
         "Symptom_Duration"
