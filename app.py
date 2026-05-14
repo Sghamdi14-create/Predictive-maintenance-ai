@@ -1,5 +1,9 @@
 import streamlit as st
 import pandas as pd
+
+from xgboost import XGBClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 st.image("logo.png", width=180)
 st.set_page_config(
     page_title="AI Predictive Maintenance",
