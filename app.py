@@ -17,7 +17,7 @@ st.write(df.columns)
 model_columns = [
     "Predictability",
     "Repeatability",
-    "Operational_Impact",
+    "Operational_impact",
     "Sudden",
     "Severity",
     "Symptom_Duration",
@@ -33,7 +33,7 @@ model_df = df.dropna(subset=model_columns)
 X = model_df[
         "Predictability",
         "Repeatability",
-        "Operational_Impact",
+        "Operational_impact",
         "Sudden",
         "Severity",
         "Symptom_Duration"
