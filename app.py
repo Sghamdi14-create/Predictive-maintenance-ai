@@ -12,7 +12,47 @@ st.set_page_config(
 )
 
 df = pd.read_csv("Predictive_Maintenance_dataset 22.CSV", sep=";")
+# تنظيف الأعمدة الرقمية لاستخدامها في XGBoost
+model_columns = [
+    "Predictability",
+    "Repeatability",
+    "Operational_Impact",
+    "Sudden",
+    "Severity",
+    "Symptom_Duration",
+    "Failure"
+]
 
+for col in model_columns:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+# حذف الصفوف غير المكتملة
+model_df = df.dropna(subset=model_columns)
+
+# تحديد المدخلات والهدف
+X = model_df[
+    [
+        "Predictability",
+        "Repeatability",
+        "Operational_Impact",
+        "Sudden",
+        "Severity",
+        "Symptom_Duration"
+    ]
+]
+
+y = model_df["Failure"]
+
+# تدريب نموذج XGBoost
+xgb_model = XGBClassifier(
+    n_estimators=50,
+    max_depth=3,
+    learning_rate=0.1,
+    random_state=42,
+    eval_metric="logloss"
+)
+
+xgb_model.fit(X, y)
 st.sidebar.title("About Project")
 st.sidebar.info("""
 AI-Based Predictive Maintenance  
