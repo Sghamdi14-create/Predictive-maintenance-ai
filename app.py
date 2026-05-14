@@ -23,8 +23,6 @@ model_columns = [
     "Symptom_Duration",
     "Failure"
 ]
-]
-
 for col in model_columns:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
@@ -41,10 +39,6 @@ X = model_df[
         "Severity",
         "Symptom_Duration"
     ]
-]
-    ]
-]
-
 y = model_df["Failure"]
 
 # تدريب نموذج XGBoost
