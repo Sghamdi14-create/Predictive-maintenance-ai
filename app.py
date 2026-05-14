@@ -14,15 +14,15 @@ st.set_page_config(
 df = pd.read_csv("Predictive_Maintenance_dataset 22.CSV", sep=";")
 st.write(df.columns)
 # تنظيف الأعمدة الرقمية لاستخدامها في XGBoost
-model_columns = [
-    "Predictability",
-    "Repeatability",
-    "Operational_impact",
-    "Sudden",
-    "Severity",
-    "Symptom_Duration",
-    "Failure"
-]
+X = model_df[
+    [
+        "Predictability",
+        "Repeatability",
+        "Operational_impact",
+        "Sudden",
+        "Severity",
+        "Symptom_Duration"
+    ]
 ]
 for col in model_columns:
     df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -32,13 +32,14 @@ model_df = df.dropna(subset=model_columns)
 
 # تحديد المدخلات والهدف
 X = model_df[
+    [
         "Predictability",
         "Repeatability",
         "Operational_impact",
         "Sudden",
         "Severity",
         "Symptom_Duration"
-]
+    ]
 ]
 y = model_df["Failure"]
 
