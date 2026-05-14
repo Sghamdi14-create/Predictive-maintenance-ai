@@ -14,7 +14,7 @@ st.set_page_config(
 df = pd.read_csv("Predictive_Maintenance_dataset 22.CSV", sep=";")
 st.write(df.columns)
 # تنظيف الأعمدة الرقمية لاستخدامها في XGBoost
-X = model_df[
+X = df[
     [
         "Predictability",
         "Repeatability",
