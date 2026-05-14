@@ -23,6 +23,7 @@ model_columns = [
     "Symptom_Duration",
     "Failure"
 ]
+]
 
 for col in model_columns:
     df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -39,6 +40,8 @@ X = model_df[
         "Sudden",
         "Severity",
         "Symptom_Duration"
+    ]
+]
     ]
 ]
 
