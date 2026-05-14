@@ -59,6 +59,13 @@ xgb_model = XGBClassifier(
 )
 
 xgb_model.fit(X, y)
+# تقييم النموذج
+y_pred = xgb_model.predict(X)
+
+accuracy = accuracy_score(y, y_pred)
+
+st.sidebar.markdown("### Model Performance")
+st.sidebar.success(f"XGBoost Accuracy: {accuracy:.2f}")
 
 # Sidebar
 st.sidebar.title("About Project")
