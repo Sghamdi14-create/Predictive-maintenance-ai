@@ -2,35 +2,40 @@ import streamlit as st
 import pandas as pd
 
 from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-st.image("logo.png", width=180)
+
 st.set_page_config(
     page_title="AI Predictive Maintenance",
     page_icon="🔧",
     layout="wide"
 )
 
+# عرض الشعار
+st.image("logo.png", width=180)
+
+# قراءة ملف البيانات
 df = pd.read_csv("Predictive_Maintenance_dataset 22.CSV", sep=";")
-st.write(df.columns)
+
+# تنظيف أسماء الأعمدة من أي مسافات مخفية
+df.columns = df.columns.str.strip()
+
 # تنظيف الأعمدة الرقمية لاستخدامها في XGBoost
-X = df[
-    [
-        "Predictability",
-        "Repeatability",
-        "Operational_impact",
-        "Sudden",
-        "Severity",
-        "Symptom_Duration"
-    ]
+model_columns = [
+    "Predictability",
+    "Repeatability",
+    "Operational_impact",
+    "Sudden",
+    "Severity",
+    "Symptom_Duration",
+    "Failure"
 ]
+
 for col in model_columns:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
 # حذف الصفوف غير المكتملة
 model_df = df.dropna(subset=model_columns)
 
-# تحديد المدخلات والهدف
+# تجهيز بيانات التدريب
 X = model_df[
     [
         "Predictability",
@@ -41,6 +46,7 @@ X = model_df[
         "Symptom_Duration"
     ]
 ]
+
 y = model_df["Failure"]
 
 # تدريب نموذج XGBoost
@@ -53,6 +59,8 @@ xgb_model = XGBClassifier(
 )
 
 xgb_model.fit(X, y)
+
+# Sidebar
 st.sidebar.title("About Project")
 st.sidebar.info("""
 AI-Based Predictive Maintenance  
@@ -66,16 +74,20 @@ Saudi Standards, Metrology and Quality Organization (SASO)
 """)
 st.sidebar.success("System Status: Online")
 
+# Main title
 st.title("🔧 AI Predictive Maintenance for Laboratory Equipment")
 
 st.markdown("""
 ### Proof-of-Concept Decision Support System
 
-This system supports predictive maintenance planning for laboratory equipment using operational risk indicators and AI decision logic.
+This system supports predictive maintenance planning for laboratory equipment using operational risk indicators and an XGBoost machine learning model.
 """)
 
+# System Overview
 st.header("System Overview")
+
 df["Risk_Score"] = pd.to_numeric(df["Risk_Score"], errors="coerce")
+
 high_risk = len(df[df["Risk_Score"] >= 8])
 medium_risk = len(df[(df["Risk_Score"] >= 5) & (df["Risk_Score"] < 8)])
 low_risk = len(df[df["Risk_Score"] < 5])
@@ -85,16 +97,19 @@ col1.metric("High Risk Devices", high_risk)
 col2.metric("Medium Risk Devices", medium_risk)
 col3.metric("Low Risk Devices", low_risk)
 
+# Dataset
 st.header("Dataset Preview")
 st.dataframe(df)
 
+# Chart
 st.header("Device Risk Dashboard")
 chart_data = df[["Device_Type", "Risk_Score"]].dropna()
 st.bar_chart(chart_data.set_index("Device_Type"))
 
+# AI Input
 st.header("AI Prediction Input")
 
-failure = st.selectbox("Failure", [0, 1])
+failure = st.selectbox("Observed Failure", [0, 1])
 predictability = st.slider("Predictability", 0, 3, 1)
 repeatability = st.slider("Repeatability", 0, 3, 1)
 operational_impact = st.slider("Operational Impact", 0, 4, 1)
@@ -102,7 +117,29 @@ sudden = st.selectbox("Sudden", [0, 1])
 severity = st.slider("Severity", 0, 3, 1)
 symptom_duration = st.slider("Symptom Duration", 0, 7, 1)
 
-if st.button("Analyze Device"):
+if st.button("Analyze Device Using XGBoost"):
+    input_data = pd.DataFrame(
+        [[
+            predictability,
+            repeatability,
+            operational_impact,
+            sudden,
+            severity,
+            symptom_duration
+        ]],
+        columns=[
+            "Predictability",
+            "Repeatability",
+            "Operational_impact",
+            "Sudden",
+            "Severity",
+            "Symptom_Duration"
+        ]
+    )
+
+    prediction = xgb_model.predict(input_data)[0]
+    probability = xgb_model.predict_proba(input_data)[0][1]
+
     risk_score = (
         failure +
         predictability +
@@ -113,25 +150,27 @@ if st.button("Analyze Device"):
         symptom_duration
     )
 
-    if risk_score >= 8:
+    if probability >= 0.70:
         status = "Critical"
         recommendation = "Immediate inspection required"
         priority = "High"
         st.error(f"AI Status: {status}")
-    elif risk_score >= 5:
+    elif probability >= 0.40:
         status = "Warning"
         recommendation = "Schedule inspection"
         priority = "Medium"
         st.warning(f"AI Status: {status}")
     else:
         status = "Normal"
-        recommendation = "Continue monitoring"
+        recommendation = "Continue routine monitoring"
         priority = "Low"
         st.success(f"AI Status: {status}")
 
-    st.info(f"Recommendation: {recommendation}")
+    st.info(f"XGBoost Failure Prediction: {int(prediction)}")
+    st.write(f"Failure Probability: {probability:.2%}")
+    st.write(f"Recommendation: {recommendation}")
     st.write(f"Priority Level: {priority}")
     st.write(f"Calculated Risk Score: {risk_score}")
 
 st.markdown("---")
-st.caption("This system is a Proof-of-Concept AI decision support tool. Final maintenance decisions require expert review.")
+st.caption("This system is a Proof-of-Concept AI decision support tool using XGBoost. Final maintenance decisions require expert review.")
