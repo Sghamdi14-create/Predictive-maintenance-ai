@@ -31,14 +31,13 @@ model_df = df.dropna(subset=model_columns)
 
 # تحديد المدخلات والهدف
 X = model_df[
-    [
         "Predictability",
         "Repeatability",
         "Operational_Impact",
         "Sudden",
         "Severity",
         "Symptom_Duration"
-    ]
+]
 y = model_df["Failure"]
 
 # تدريب نموذج XGBoost
