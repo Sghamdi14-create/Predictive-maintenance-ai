@@ -16,7 +16,7 @@ st.image("logo.png", width=180)
 # Read Excel Dataset
 # =========================
 
-df = pd.read_excel("Predictive_Maintenance_dataset 22.xlsx")
+df = pd.read_excel("Predictive_Maintenance_dataset_22.xlsx")
 
 df.columns = df.columns.str.strip()
 
