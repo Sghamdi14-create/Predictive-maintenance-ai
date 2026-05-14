@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from pathlib import Path
 
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
@@ -13,12 +14,33 @@ st.set_page_config(
 st.image("logo.png", width=180)
 
 # =========================
-# Read Excel Dataset
+# Read Dataset Automatically
 # =========================
 
-df = pd.read_excel("Predictive_Maintenance_dataset_22.xlsx")
+excel_files = list(Path(".").glob("*.xlsx"))
 
-df.columns = df.columns.str.strip()
+if len(excel_files) == 0:
+    st.error("No Excel dataset file was found. Please upload the .xlsx file to GitHub.")
+    st.stop()
+
+data_file = excel_files[0]
+
+try:
+    df = pd.read_excel(data_file, sheet_name="AI-Data")
+except:
+    df = pd.read_excel(data_file)
+
+# تنظيف أسماء الأعمدة وتوحيدها
+df.columns = (
+    df.columns
+    .str.strip()
+    .str.replace(" ", "_")
+    .str.replace("-", "_")
+)
+
+# =========================
+# Required Columns
+# =========================
 
 feature_columns = [
     "Predictability",
@@ -29,13 +51,38 @@ feature_columns = [
     "Symptom_Duration"
 ]
 
-for col in feature_columns + ["Failure", "Risk_Score"]:
+target_column = "Failure"
+
+required_columns = feature_columns + [target_column, "Risk_Score", "Device_Type"]
+
+missing_columns = [col for col in required_columns if col not in df.columns]
+
+if missing_columns:
+    st.error("Missing columns in the dataset:")
+    st.write(missing_columns)
+    st.write("Available columns are:")
+    st.write(list(df.columns))
+    st.stop()
+
+# =========================
+# Convert Numeric Columns
+# =========================
+
+for col in feature_columns + [target_column, "Risk_Score"]:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
-model_df = df.dropna(subset=feature_columns + ["Failure"])
+model_df = df.dropna(subset=feature_columns + [target_column])
 
 X = model_df[feature_columns]
-y = model_df["Failure"]
+y = model_df[target_column]
+
+# =========================
+# Train XGBoost Model
+# =========================
+
+if y.nunique() < 2:
+    st.error("The dataset must contain both Failure = 0 and Failure = 1 cases.")
+    st.stop()
 
 xgb_model = XGBClassifier(
     n_estimators=50,
@@ -46,6 +93,10 @@ xgb_model = XGBClassifier(
 )
 
 xgb_model.fit(X, y)
+
+# =========================
+# Model Evaluation
+# =========================
 
 y_pred = xgb_model.predict(X)
 
@@ -58,6 +109,10 @@ importance_df = pd.DataFrame({
     "Feature": feature_columns,
     "Importance": xgb_model.feature_importances_
 }).sort_values(by="Importance", ascending=False)
+
+# =========================
+# Sidebar
+# =========================
 
 st.sidebar.title("About Project")
 
@@ -84,6 +139,10 @@ st.sidebar.caption("Preliminary result based on the current proof-of-concept dat
 st.sidebar.markdown("## Feature Importance")
 st.sidebar.dataframe(importance_df)
 
+# =========================
+# Main Page
+# =========================
+
 st.title("🔧 AI Predictive Maintenance for Laboratory Equipment")
 
 st.markdown("""
@@ -91,6 +150,12 @@ st.markdown("""
 
 This system supports predictive maintenance planning for laboratory equipment using operational risk indicators and an XGBoost machine learning model.
 """)
+
+st.caption(f"Dataset loaded from: {data_file.name}")
+
+# =========================
+# System Overview
+# =========================
 
 st.header("System Overview")
 
@@ -104,16 +169,32 @@ col1.metric("High Risk Devices", high_risk)
 col2.metric("Medium Risk Devices", medium_risk)
 col3.metric("Low Risk Devices", low_risk)
 
+# =========================
+# Dataset Preview
+# =========================
+
 st.header("Dataset Preview")
 st.dataframe(df)
+
+# =========================
+# Device Risk Dashboard
+# =========================
 
 st.header("Device Risk Dashboard")
 
 chart_data = df[["Device_Type", "Risk_Score"]].dropna()
 st.bar_chart(chart_data.set_index("Device_Type"))
 
+# =========================
+# Feature Importance
+# =========================
+
 st.header("XGBoost Feature Importance")
 st.bar_chart(importance_df.set_index("Feature"))
+
+# =========================
+# Model Evaluation Summary
+# =========================
 
 st.header("Model Evaluation Summary")
 
@@ -126,9 +207,14 @@ m4.metric("F1 Score", f"{f1:.2f}")
 
 st.caption("These metrics are preliminary and calculated on the current proof-of-concept dataset.")
 
+# =========================
+# AI Predictive Analysis
+# =========================
+
 st.header("AI Predictive Analysis")
 
-failure = st.selectbox("Failure", [0, 1])
+failure = st.selectbox("Observed Failure", [0, 1])
+
 predictability = st.slider("Predictability", 0, 3, 1)
 repeatability = st.slider("Repeatability", 0, 3, 1)
 operational_impact = st.slider("Operational Impact", 0, 4, 1)
