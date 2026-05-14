@@ -84,6 +84,15 @@ st.sidebar.success("System Status: Online")
 st.sidebar.markdown("### Model Performance")
 st.sidebar.success(f"XGBoost Accuracy: {model_accuracy:.2f}")
 st.sidebar.caption("Preliminary result based on the current proof-of-concept dataset.")
+# Feature Importance
+st.sidebar.markdown("### Feature Importance")
+
+feature_importance = pd.DataFrame({
+    "Feature": X.columns,
+    "Importance": xgb_model.feature_importances_
+}).sort_values(by="Importance", ascending=False)
+
+st.sidebar.dataframe(feature_importance)
 # العنوان الرئيسي
 st.title("🔧 AI Predictive Maintenance for Laboratory Equipment")
 
@@ -95,7 +104,8 @@ This system supports predictive maintenance planning for laboratory equipment us
 
 # نظرة عامة
 st.header("System Overview")
-
+st.header("XGBoost Feature Importance")
+st.bar_chart(feature_importance.set_index("Feature"))
 df["Risk_Score"] = pd.to_numeric(df["Risk_Score"], errors="coerce")
 
 high_risk = len(df[df["Risk_Score"] >= 8])
